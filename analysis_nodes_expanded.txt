@@ -1,0 +1,5 @@
+BFS 89
+BiBfs 45
+aStar 41
+UCS 36
+MM 46

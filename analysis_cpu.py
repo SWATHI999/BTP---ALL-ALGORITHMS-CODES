@@ -1,5 +1,5 @@
-x=open('Analysis_of_MM.txt',"r")
-x3=open('analysis__cputime.txt',"a")
+x=open('analysis_bibfs.txt',"r")
+x3=open('CPU_Time_Analysis.txt',"a")
 x1=x.readlines()
 
 x2= x1[2:]
@@ -14,5 +14,5 @@ for i in range(len(x2)):
 
 avg=sum1/len(x2)
 #print avg
-x3.write("MM"+" "+str(avg))
+x3.write("Bibfs"+" "+str(avg))
 x3.write('\n')

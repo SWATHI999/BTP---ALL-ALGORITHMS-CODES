@@ -1,0 +1,5 @@
+MM 46
+UCS 36
+BFS 89
+Astar 41
+Bibfs 45
