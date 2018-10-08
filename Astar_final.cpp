@@ -34,7 +34,11 @@ class Astar
 	void update(int child,int vertex,int score);
         void addedge();
 	void printpath(int s,int t);
-
+	FILE* fptrout;  
+	FILE* fptrout1;
+	FILE* nei;
+	FILE* fptrout2;
+	FILE* openq_nodes_del;
 };
 void Astar::init(int n)
 {
@@ -44,16 +48,17 @@ void Astar::init(int n)
 void Astar::addedge()
 {
 	//FILE *file = fopen ("Graph_data.txt", "r" );
-	FILE *file = fopen ("Graph_Data_Edges.txt", "r" );
-        FILE *file1= fopen("heuristics_MM.txt 60","r");
+	FILE *file = fopen ("Graph_Data_Edges_22.txt", "r" );
+        FILE *file1= fopen("target_heuristics.txt","r");
 	FILE *file3= fopen("out_astar.txt","w");
+	int k,l;
 	if ( file != NULL )
 	{
 		char line [ 128 ]; 
 		while(fgets(line, sizeof line, file ) != NULL ) 
 		{
 			char u[128],v[128],edges_cost[128];
-			int flag=0,k=0,l=0,flag1=0,z=0;
+			int flag=0,flag1=0,z=0, k=0, l=0;
 			for(int i=0;i<10;i++)
 			{
 				if(line[i]==' ')
@@ -81,7 +86,6 @@ void Astar::addedge()
 			fprintf(file3,"%d %d %d\n",atoi(u),atoi(v),G[atoi(u)][atoi(v)]);
 			//G[atoi(u)][atoi(v)]=1;
 			//G[atoi(v)][atoi(u)]=1;
-
 		}
 		fclose (file);
 	}
@@ -101,11 +105,14 @@ void Astar::addedge()
 int* Astar::neighbours(int v)
 {
 	int k=1;
+	nei = fopen ("nei_nodes.txt", "a" );
+	fprintf(nei, "neighbours of %d\n", v);
 	for(int i=1;i<=vertexcount;i++)
 	{
 		if(G[v][i]>0)
 		{
 			set[k]=i;
+			fprintf(nei, "%d ", set[k]);
 			k++;
 		}
 	}
@@ -172,7 +179,6 @@ void Astar::update(int child,int vertex,int score)
 		node x=openq.top();
 		if(x.vertex_number==child)
 		{
-
 			x.vertex_number=child;
 			x.g=score;
 			parent[x.vertex_number]=vertex;
@@ -186,10 +192,10 @@ void Astar::update(int child,int vertex,int score)
 		openq.pop();
 	}
 	openq=copyopenq;
-
 }
 int Astar::astar(int s,int g,FILE *f)
 {
+	fptrout2 = fopen("openq_nodes.txt", "w");
 	source=s;
 	goal=g;
 	node temp;
@@ -201,22 +207,29 @@ int Astar::astar(int s,int g,FILE *f)
 	while(openq.size()>0)
 	{
 		node fmin=openq.top();
+		//fprintf(fptrout2, "Openq:%d\n", openq.top());
 		if(fmin.vertex_number==goal)
 		{
 			printf("u:%d\n",fmin.g);
-			fprintf(f,"%d ",closedq.size());
+			//fprintf(f,"%d ",closedq.size());
 			//fprintf(f,"\n");
+			//fptrout = fopen("AStar Solution Path.txt", "a");
+			fptrout1 = fopen("AStar_Del_Sol_Nodes.txt", "a");
+			openq_nodes_del = fopen("openq_nodes_del.txt", "a");
 			printpath(source,goal);
+			//fprintf(fptrout1,"\n");
+
+			//fprintf(openq_nodes_del, "\n");
 		}
 		openq.pop();
 		closedq.push(fmin);
+		fprintf(fptrout2, "Closedq:%d\n", fmin.vertex_number);
 		int* nei=neighbours(fmin.vertex_number);
 		for(int i=1;i<=degree(fmin.vertex_number);i++)
 		{
 			int belong_closed=checkclosed(nei[i]);
 			if(belong_closed==1)
 			{
-
 				continue;
 			}		
 			int notbelong_open=checkopen(nei[i]);
@@ -227,6 +240,7 @@ int Astar::astar(int s,int g,FILE *f)
 				temp.f=temp.g+heuristics[nei[i]];
 				parent[nei[i]]=fmin.vertex_number;
 				openq.push(temp);
+				//printf("%d\n", temp.vertex_number);
 			}
 			else
 			{
@@ -240,7 +254,7 @@ int Astar::astar(int s,int g,FILE *f)
 				}
 			}
 		}
-	}
+	}		
 }
 void Astar::printpath(int s,int t)
 {
@@ -249,6 +263,11 @@ void Astar::printpath(int s,int t)
 	{
 		length++;
 		printf("%d",t);
+		//fprintf(fptrout1,"%d ",t);
+
+		//fprintf(openq_nodes_del,"%d ",t);
+
+		//fprintf(fptrout,"\n");
 		return;
 	}
 	else
@@ -258,7 +277,9 @@ void Astar::printpath(int s,int t)
 		printpath(s,k);
 		printf("%c",' ');
 		printf("%d",t);
+		//fprintf(fptrout1,"%d ",t);
 
+		//fprintf(openq_nodes_del,"%d ",t);
 	}
 }
 int main()
@@ -267,6 +288,7 @@ int main()
 	Astar a;
 	int s,n=89,g;
 	FILE *fptr;
+        FILE *fptr1;
    	fptr = fopen("analysis_astar.txt", "a");
 		
 	printf("Enter the source node\n");
@@ -276,17 +298,23 @@ int main()
 	printf("Enter the destination node\n");
 	scanf("%d",&g);
 	fprintf(fptr,"%d ",g);
-
 	a.init(n);
 	a.astar(s,g,fptr);
 	clock_t end=clock();
         double ts=(double)(end-begin)/CLOCKS_PER_SEC;
 	fprintf(fptr,"%lf ",ts);
+
+	a.neighbours(85);
+
+	while(a.closedq.size())
+	{
+		//printf("num: %d\n", a.closedq.front());
+		a.closedq.pop();
+	}
 	//fprintf(fptr,"%d ",a.closedq.size());
 	fprintf(fptr,"%d ",a.length-1);
 	fprintf(fptr,"\n");
-
         printf("\n");
-        printf("%lf seconds to execute\n",ts);
+        printf("%lf seconds to execute\n",ts);	
         return 0;
 }

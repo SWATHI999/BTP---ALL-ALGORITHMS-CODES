@@ -1,0 +1,21 @@
+Path after deleting a node in openq
+
+1 85 31 (Upon deleting 70)
+ 
+57 43 54 25 88 (Upon deleting 60)
+
+77 54 43 16 (Upon deleting 50)
+
+29 88 25 22 13 16 (Upon deleting 80)
+
+9 19 87 30 23 58 81 (Upon deleting 40)
+
+24 21 69 (Upon deleting 30)
+
+1 71 60 13 89 (Upon deleting 25)
+
+39 19 9 (Upon deleting 45)
+
+60 71 25 15 (Upon deleting 75)
+
+60 43 57 (Upon deleting 65) 
